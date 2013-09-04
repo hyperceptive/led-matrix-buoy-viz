@@ -31,54 +31,108 @@ public:
 
     Color blue;
     blue.blue = 255;
-
-    //Dominant Swell
-    _matrix->putChar(0, 0, 'W', 2, green);
-
-    _matrix->putChar(7,  0, '1',  2, green);
-    _matrix->putChar(11, 0, '0',  2, green);
-    _matrix->putChar(15, 0, '\'', 2, green);
-
-    _matrix->putChar(20, 0, '1', 2, green);
-    _matrix->putChar(24, 0, '2', 2, green);
-    _matrix->putChar(29, 1, 's', 1, green);
-
-
-    //Secondary Swell
-    _matrix->putChar(0, 26, 'N', 2, blue);
-    _matrix->putChar(5, 26, 'W', 2, blue);
-
-    _matrix->putChar(14, 26, '3',  2, blue);
-    _matrix->putChar(18, 26, '\'', 2, blue);
-
-    _matrix->putChar(24, 26, '5', 2, blue);
-    _matrix->putChar(29, 27, 's', 1, blue);
-
-
-/*
-    _matrix->setTextCursor(0, 27);
-    _matrix->setFontColor(blue);
-    _matrix->writeLetter('N');
-    _matrix->writeLetter('W');
-    _matrix->writeLetter(' ');
-    _matrix->writeLetter('3');
-    _matrix->writeLetter('\'');
-    _matrix->writeLetter(' ');
-    _matrix->writeLetter('5');
-    _matrix->writeLetter('s');
-*/
-
-    _matrix->drawWedge(16, 16, 8, 180, 270, blue);
-    _matrix->drawWedge(16, 16, 12, 135, 225, green);
-/*
+      
     Color white;
-    white.red = 80;
-    white.green = 80;
-    white.blue = 80;
+    white.red = 255;
+    white.green = 255;
+    white.blue = 255;
 
-    _matrix->drawLine(3, 16, 16, 16, white);
-*/
-    _matrix->fillCircle(16, 16, 1, red);
+    // Different Stats to Display
+    //   1: Primary Swell
+    //   2: Seconday Swell
+    //   3: Tide
+    //   4: Wind
+    //   5: Time & Sunrise/Sunset
+    //   6: Temp: Air / Water
+    const int NumStats = 6;
+    int curStat = 1;
+
+    while (!isDone())
+    {
+      switch (curStat)
+      {
+        case 1:
+          // Dominant Swell
+          _matrix->putChar(0, 26, 'W', 2, green);
+
+          _matrix->putChar(7,  26, '1',  2, green);
+          _matrix->putChar(11, 26, '0',  2, green);
+          _matrix->putChar(15, 26, '\'', 2, green);
+
+          _matrix->putChar(20, 26, '1', 2, green);
+          _matrix->putChar(24, 26, '2', 2, green);
+          _matrix->putChar(29, 27, 's', 1, green);
+
+          _matrix->drawWedge(16, 11, 12, 135, 225, green);
+          _matrix->fillCircle(16, 11, 1, red); //buoy location
+
+
+          sleep(5);
+          _matrix->fadeDisplay();
+          sleep(1);
+
+          break;
+
+        case 2:
+	  // Secondary Swell
+	  _matrix->putChar(0, 26, 'N', 2, blue);
+	  _matrix->putChar(5, 26, 'W', 2, blue);
+
+	  _matrix->putChar(14, 26, '3',  2, blue);
+	  _matrix->putChar(18, 26, '\'', 2, blue);
+
+	  _matrix->putChar(24, 26, '5', 2, blue);
+	  _matrix->putChar(29, 27, 's', 1, blue);
+
+	  _matrix->drawWedge(16, 11, 8, 180, 270, blue);
+	  _matrix->fillCircle(16, 11, 1, red); //buoy location
+
+          sleep(5);
+          _matrix->fadeDisplay();
+          sleep(1);
+
+          break;
+
+        case 3:
+          // TODO: Tide
+          break;
+
+        case 4:
+          // TODO: Wind
+          break;
+
+        case 5:
+          // TODO: Time & Sunrise / Sunset
+          _matrix->setTextCursor(0, 0);
+          _matrix->setFontSize(2);
+          _matrix->setFontColor(white);
+
+          _matrix->writeChar('9');
+          _matrix->writeChar(':');
+          _matrix->writeChar('5');
+          _matrix->writeChar('2');
+
+          _matrix->setTextCursor(21, 1);
+          _matrix->setFontSize(1);
+          _matrix->writeChar('P');
+          _matrix->writeChar('M'); 
+
+          sleep(5);
+          _matrix->fadeDisplay();
+          sleep(1);
+
+          break;
+
+        case 6:
+          // TODO: Temp: Air / Water
+          break;
+      }
+
+      //TODO: Sleep
+
+      curStat++;
+      if (curStat > NumStats) curStat = 1;
+    }
   }
 
 };
@@ -109,6 +163,8 @@ int main(int argc, char *argv[])
 
   printf("Press <RETURN> when done.\n");
   getchar();
+
+  printf("Signaling visualization to stop.\n\n");
 
   // Stop threads and wait for them to join.
   if (display) delete display;
