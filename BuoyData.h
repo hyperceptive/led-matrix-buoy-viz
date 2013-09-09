@@ -46,6 +46,10 @@ public:
   void setWindSwellPeriod(std::string wsp) { _latestBuoyInfo.windSwellPeriod = wsp; }
   void setWindSwellDirection(std::string wsd) { _latestBuoyInfo.windSwellDirection = wsd; }
 
+  // Conversion Methods
+  std::string convertMetersToFeet(std::string meters);
+  float convertCompassPointToDegrees(std::string cp);
+
 private:
 
   BuoyInfo _latestBuoyInfo;

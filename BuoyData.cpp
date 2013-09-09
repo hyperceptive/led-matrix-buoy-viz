@@ -41,18 +41,6 @@ std::string **buoyInfoData;
 
 
 //-----------------------------------------------------------------------------
-std::string convertMetersToFeet(std::string meters)
-{
-  float feet = atof(meters.c_str()) * 3.2808;
-  feet = floorf(feet * 5 + 0.5) / 5;
-
-  std::ostringstream ss;
-  ss << feet;
-  return ss.str();
-}
-
-
-//-----------------------------------------------------------------------------
 void headersReady(const HttpResponse *response, void *additionalParams)
 {
   printf("HTTP Status: %d - %s\n", response->getStatus(), response->getReason());
@@ -79,7 +67,7 @@ void responseComplete(const HttpResponse *response, void *additionalParams)
   std::string onlyData;
   //For CDIP service: unsigned posStart, posEnd, length;
 
-  //TODO: pass an instance of the BuoyData class.
+  //Param is an instance of the BuoyData class.
   BuoyData *buoyData = static_cast<BuoyData*>(additionalParams);
 
   // First, get the RAW data.
@@ -160,12 +148,16 @@ void responseComplete(const HttpResponse *response, void *additionalParams)
 
   buoyData->setDate(buoyInfoData[2][0] + buoyInfoData[2][1] + buoyInfoData[2][2]); //YYYYMMDD
   buoyData->setTime(buoyInfoData[2][3] + buoyInfoData[2][4]); //HHMM
-  buoyData->setGroundSwellHeight(convertMetersToFeet(buoyInfoData[2][6]));
+  buoyData->setGroundSwellHeight(buoyData->convertMetersToFeet(buoyInfoData[2][6]));
   buoyData->setGroundSwellPeriod(buoyInfoData[2][7]);
   buoyData->setGroundSwellDirection(buoyInfoData[2][10]);
-  buoyData->setWindSwellHeight(convertMetersToFeet(buoyInfoData[2][8]));
+  buoyData->setWindSwellHeight(buoyData->convertMetersToFeet(buoyInfoData[2][8]));
   buoyData->setWindSwellPeriod(buoyInfoData[2][9]);
   buoyData->setWindSwellDirection(buoyInfoData[2][11]);
+
+
+  //TODO: setup a timer to request this info again.
+  
 }
 
 
@@ -250,8 +242,6 @@ void BuoyData::getBuoyData()
     request.processRequest();
   }
 
-
-
   //http://www.ndbc.noaa.gov/data/realtime2/46237.txt
   //#YY  MM DD hh mm WDIR WSPD GST  WVHT   DPD   APD MWD   PRES  ATMP  WTMP  DEWP  VIS PTDY  TIDE
   //#yr  mo dy hr mn degT m/s  m/s     m   sec   sec degT   hPa  degC  degC  degC  nmi  hPa    ft
@@ -264,10 +254,58 @@ void BuoyData::getBuoyData()
   // APD (s)   -- also above
   // MWD (deg) -- also above
   // WTMP (C)
-
-  
   
 }
 
 
+
+//-----------------------------------------------------------------------------
+std::string BuoyData::convertMetersToFeet(std::string meters)
+{
+  float feet = atof(meters.c_str()) * 3.2808;
+  feet = floorf(feet * 5 + 0.5) / 5;
+
+  std::ostringstream ss;
+  ss << feet;
+  return ss.str();
+}
+
+//-----------------------------------------------------------------------------
+float BuoyData::convertCompassPointToDegrees(std::string cp)
+{
+  if (cp == "N")
+    return 270;
+  else if (cp == "NNE")
+    return 292.5;
+  else if (cp == "NE")
+    return 315;
+  else if (cp == "ENE")
+    return 337.5;
+  else if (cp == "E")
+    return 0;
+  else if (cp == "ESE")
+    return 22.5;
+  else if (cp == "SE")
+    return 45;
+  else if (cp == "SSE")
+    return 67.5;
+  else if (cp == "S")
+    return 90;
+  else if (cp == "SSW")
+    return 112.5;
+  else if (cp == "SW")
+    return 135;
+  else if (cp == "WSW")
+    return 157.5;
+  else if (cp == "W")
+    return 180;
+  else if (cp == "WNW")
+    return 202.5;
+  else if (cp == "NW")
+    return 225;
+  else if (cp == "NNW")
+    return 247.5;
+
+  return 0;
+}
 

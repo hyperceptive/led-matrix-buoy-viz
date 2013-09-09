@@ -4,9 +4,9 @@ RPI_HTTP_LIB = httprequest
 CXXFLAGS = -Wall -O3 -g -I../rpi-led-matrix-panel -I../rpi-http-request
 LDFLAGS = -L../rpi-led-matrix-panel -L../rpi-http-request
 LIBS = -lpthread -l$(RPI_LED_LIB) -l$(RPI_HTTP_LIB)
-TARGET = buoyViz
+TARGET = surfViz
 
-SRCS = BuoyInfoDataViz.cpp BuoyData.cpp Thread.cpp
+SRCS = SurfVisualization.cpp LedMatrixBuoyViz.cpp BuoyData.cpp Thread.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 
