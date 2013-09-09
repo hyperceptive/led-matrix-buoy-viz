@@ -2,6 +2,7 @@
 // Use of this source code is governed by The MIT License
 // that can be found in the LICENSE file.
 
+#include "BuoyData.h"
 #include "RgbMatrix.h"
 #include "RgbMatrixContainer.h"
 
@@ -10,15 +11,33 @@
 class LedMatrixBuoyViz : public RgbMatrixContainer
 {
 public:
-  LedMatrixBuoyViz(RgbMatrix *m) : RgbMatrixContainer(m) {}
 
   static const int SwellFontWidth = 4;
 
-  static const int WaitBefore = 3;
+  static const int WaitBefore = 4;
   static const int WaitAfter = 1;
+
+
+  LedMatrixBuoyViz(RgbMatrix *m);
 
   void run();
 
 private:
+
+  Color _red;
+  Color _green;
+  Color _blue;
+  Color _purple;
+  Color _yellow;
+  Color _white;
+
+  BuoyData *_buoyData;
+
+
+  void groundSwell();
+  void windSwell();
+  void groundAndWindSwell();
+
+  void sunriseSunset();
 
 };
