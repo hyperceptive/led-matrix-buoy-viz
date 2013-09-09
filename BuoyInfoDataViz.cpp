@@ -43,18 +43,23 @@ public:
     Color blue;
     blue.blue = 255;
 
-    Color white;
-    white.red = 255;
-    white.green = 255;
-    white.blue = 255;
+    Color purple;
+    purple.red = 255;
+    purple.blue = 255;
 
     Color yellow;
     yellow.red = 255;
     yellow.green = 255;
 
+    Color white;
+    white.red = 255;
+    white.green = 255;
+    white.blue = 255;
+
     // Different Stats to Display
     //   1: Primary Swell
     //   2: Seconday Swell
+    // TODO: show both swells...
     //   3: Tide
     //   4: Wind
     //   5: Time & Sunrise/Sunset
@@ -66,27 +71,66 @@ public:
     BuoyData *buoyData = new BuoyData();    
     buoyData->getBuoyData();
 
+    std::cout << "Last Updated at: " << 
+                 buoyData->getDate() << " " <<
+                 buoyData->getTime() << std::endl
+              << "Ground Swell: " << 
+                 buoyData->getGroundSwellDirection() << " " <<
+                 buoyData->getGroundSwellHeight() << "' @ " <<
+                 buoyData->getGroundSwellPeriod() << "s" << std::endl
+              << "Wind Swell: " << 
+                 buoyData->getWindSwellDirection() << " " <<
+                 buoyData->getWindSwellHeight() << "' @ " <<
+                 buoyData->getWindSwellPeriod() << "s" << std::endl << std::endl;
+
+
     while (!isDone())
     {
       switch (curStat)
       {
         case 1:
+        {
           // Primary Swell
+          _matrix->setTextCursor(0, 0);
+          _matrix->setFontColor(green);
+          _matrix->setFontSize(2);
 
-          //TODO: Get the largest swell from dataTable...
-          std::cout << "Last Updated at: " << 
-                       buoyData->getDate() << " " <<
-                       buoyData->getTime() << std::endl
-                    << "Ground Swell: " << 
-                       buoyData->getGroundSwellDirection() << " " <<
-                       buoyData->getGroundSwellHeight() << "' @ " <<
-                       buoyData->getGroundSwellPeriod() << "s" << std::endl
-                    << "Wind Swell: " << 
-                       buoyData->getWindSwellDirection() << " " <<
-                       buoyData->getWindSwellHeight() << "' @ " <<
-                       buoyData->getWindSwellPeriod() << "s" << std::endl << std::endl;
+          _matrix->writeChar('G');
+          _matrix->writeChar('r');
+          _matrix->writeChar('o');
+          _matrix->writeChar('u');
+          _matrix->writeChar('n');
+          _matrix->writeChar('d');
 
+          _matrix->setTextCursor(5, 10);
+          std::string work = buoyData->getGroundSwellDirection();
 
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->setTextCursor(5, 18);
+          work = buoyData->getGroundSwellHeight();
+
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->writeChar('\'');
+
+          _matrix->setTextCursor(5, 26);
+          work = buoyData->getGroundSwellPeriod();
+
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->writeChar('s');
+
+/*
           _matrix->putChar(0, 26, 'W', 2, green);
 
           _matrix->putChar(7,  26, '1',  2, green);
@@ -96,18 +140,96 @@ public:
           _matrix->putChar(20, 26, '1', 2, green);
           _matrix->putChar(24, 26, '2', 2, green);
           _matrix->putChar(29, 27, 's', 1, green);
+*/
+          sleep(WaitBefore);
+          //_matrix->clearDisplay();
+          _matrix->fadeDisplay();
+          //sleep(WaitAfter);
 
+          //TODO: Calculate Angle and Size from Height, Period, and Direction.
           _matrix->drawWedge(16, 11, 12, 135, 225, green);
           _matrix->fillCircle(16, 11, 1, red); //buoy location
+
+
+          _matrix->setTextCursor(0, 27);
+          _matrix->setFontSize(1);
+/*
+          work = buoyData->getGroundSwellDirection();
+
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->writeChar(' ');
+*/
+          work = buoyData->getGroundSwellHeight();
+
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->writeChar('\'');
+          _matrix->writeChar('@');
+
+          work = buoyData->getGroundSwellPeriod();
+
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->writeChar('s');
+
 
           sleep(WaitBefore);
           _matrix->fadeDisplay();
           sleep(WaitAfter);
-
          break;
+        }
 
         case 2:
+        {
 	  // Secondary Swell
+          _matrix->setTextCursor(0, 0);
+          _matrix->setFontColor(blue);
+          _matrix->setFontSize(2);
+
+          _matrix->writeChar('W');
+          _matrix->writeChar('i');
+          _matrix->writeChar('n');
+          _matrix->writeChar('d');
+
+          _matrix->setTextCursor(5, 10);
+          std::string work = buoyData->getWindSwellDirection();
+
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->setTextCursor(5, 18);
+          work = buoyData->getWindSwellHeight();
+
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->writeChar('\'');
+
+          _matrix->setTextCursor(5, 26);
+          work = buoyData->getWindSwellPeriod();
+
+          for (std::string::iterator itr = work.begin(); itr != work.end(); itr++)
+          {
+            _matrix->writeChar(*itr);
+          }
+
+          _matrix->writeChar('s');
+
+/*
 	  _matrix->putChar(0, 26, 'N', 2, blue);
 	  _matrix->putChar(5, 26, 'W', 2, blue);
 
@@ -116,14 +238,19 @@ public:
 
 	  _matrix->putChar(24, 26, '5', 2, blue);
 	  _matrix->putChar(29, 27, 's', 1, blue);
+*/
+          sleep(WaitBefore);
+          _matrix->fadeDisplay();
+          //sleep(WaitAfter);
 
+          //TODO: Calculate Angle and Size from Height, Period, and Direction.
 	  _matrix->drawWedge(16, 11, 8, 180, 270, blue);
 	  _matrix->fillCircle(16, 11, 1, red); //buoy location
 
           sleep(WaitBefore);
           _matrix->fadeDisplay();
           sleep(WaitAfter);
-
+        }
           break;
 
         case 3:
@@ -166,10 +293,10 @@ public:
             _matrix->putChar(cursorX, 0, hourString[1], 2, white);
           }
 
-          cursorX += SwellFontWidth;
+          cursorX += SwellFontWidth + 1; //mateo: added 1
           _matrix->putChar(cursorX, 0, ':', 2, white);
 
-          cursorX += SwellFontWidth - 1; // -1 to make closer to ":"
+          cursorX += SwellFontWidth; //mateo: - 1; // -1 to make closer to ":"
           _matrix->putChar(cursorX, 0, minString[0], 2, white);
           cursorX += SwellFontWidth;
           _matrix->putChar(cursorX, 0, minString[1], 2, white);
