@@ -2,6 +2,7 @@
 // Use of this source code is governed by The MIT License
 // that can be found in the LICENSE file.
 
+#include "BuoyData.h"
 #include "DisplayUpdater.h"
 #include "HttpRequest.h"
 #include "RgbMatrix.h"
@@ -16,134 +17,6 @@
 
 #include <stdio.h>
 #include <unistd.h>
-
-
-
-template <typename T>
-T **allocateDynamicArray(int rows, int cols)
-{
-  T **dynamicArray;
-
-  dynamicArray = new T*[rows];
-
-  for (int i=0; i < rows; i++)
-  {
-    dynamicArray[i] = new T[cols];
-  }
-
-  return dynamicArray;
-}
-
-template <typename T>
-void freeDynamicArray(T **array)
-{
-  delete[] *array;
-  delete[] array;
-}
-
-
-
-int payloadSize = 0;
-std::string payload;
-
-void headersReady(const HttpResponse *response, void *additionalParams)
-{
-  printf("HTTP Status: %d - %s\n", response->getStatus(), response->getReason());
-  payloadSize = 0;
-}
-
-void receiveData(const HttpResponse *response, void *additionalParams, const unsigned char *data, int sizeOfData)
-{
-  payloadSize += sizeOfData;
-
-  for (int i=0; i < sizeOfData; i++)
-  {
-    char c = data[i];
-    payload += c;
-  }
-}
- 
-void responseComplete(const HttpResponse *response, void *additionalParams)
-{
-  printf("Data Size: %d bytes\n\n", payloadSize);
-
-  // Process the buoy data
-  unsigned posStart = payload.find("YYYYMMDDHHMM");
-  unsigned posEnd   = payload.find("</pre>");
-  unsigned length   = posEnd - posStart;
-
-  std::string onlyData = payload.substr(posStart, length);
-
-  std::string tableData;
-
-  int rows = 0;
-  int cols = 1;
-
-  for (std::string::iterator itr = onlyData.begin(); itr != onlyData.end(); itr++)
-  {
-    if (*itr == ' ')
-    {
-      if (rows == 0) cols++;
-      tableData += '\t';
-
-      while (*itr && *itr == ' ')
-      {
-        itr++; // Skip additional spaces
-      }
-
-      if (*itr && *itr != ' ') itr--;
-    }
-    else if (*itr == '\n')
-    {
-      rows++;
-      tableData += *itr;
-    }
-    else
-    {
-      tableData += *itr;
-    }
-  }
-
-  std::string **dataTable = allocateDynamicArray<std::string>(rows, cols);
-  std::string currentValue;
-  int currRow = 0;
-  int currCol = 0; 
-
-  // Populate the data table
-  for (std::string::iterator itr = tableData.begin(); itr != tableData.end(); itr++)
-  {
-    if (*itr == '\t')
-    {
-      std::cout << "Adding: " << currentValue << ", to row: " << currRow << ", col: " << currCol << std::endl;
-
-      dataTable[currRow][currCol] = currentValue;
-      currentValue.clear();
-      currCol++;
-    }
-    else if (*itr == '\n')
-    {
-      std::cout << "Adding: " << currentValue << ", to row: " << currRow << ", col: " << currCol << std::endl;
-
-      dataTable[currRow][currCol] = currentValue;
-      currentValue.clear();
-      currRow++;
-      currCol = 0;
-    }
-    else
-    {
-      currentValue += *itr;
-    }
-  }
-
-  std::cout << "Here is the data: " << std::endl << tableData << std::endl
-            << "rows: " << rows << ", cols: " << cols << std::endl;
-
-  std::cout << "array[0][3]: " << dataTable[0][3] << std::endl
-            << "array[7][0]: " << dataTable[7][0] << std::endl;
-
-
-  freeDynamicArray<std::string>(dataTable);
-}
 
 
 
@@ -169,7 +42,7 @@ public:
 
     Color blue;
     blue.blue = 255;
-      
+
     Color white;
     white.red = 255;
     white.green = 255;
@@ -189,14 +62,31 @@ public:
     const int NumStats = 6;
     int curStat = 1;
 
-    //TODO: update data periodically
-    getBuoyData();
+    //Get the Buoy data from a web-service/API.
+    BuoyData *buoyData = new BuoyData();    
+    buoyData->getBuoyData();
 
     while (!isDone())
     {
       switch (curStat)
       {
         case 1:
+          // Primary Swell
+
+          //TODO: Get the largest swell from dataTable...
+          std::cout << "Last Updated at: " << 
+                       buoyData->getDate() << " " <<
+                       buoyData->getTime() << std::endl
+                    << "Ground Swell: " << 
+                       buoyData->getGroundSwellDirection() << " " <<
+                       buoyData->getGroundSwellHeight() << "' @ " <<
+                       buoyData->getGroundSwellPeriod() << "s" << std::endl
+                    << "Wind Swell: " << 
+                       buoyData->getWindSwellDirection() << " " <<
+                       buoyData->getWindSwellHeight() << "' @ " <<
+                       buoyData->getWindSwellPeriod() << "s" << std::endl << std::endl;
+
+
           _matrix->putChar(0, 26, 'W', 2, green);
 
           _matrix->putChar(7,  26, '1',  2, green);
@@ -321,29 +211,6 @@ public:
 
 
 private:
-
-  //---------------------------------------------------------------------------
-  void getBuoyData()
-  {
-    const char *headers[] =
-    {
-      "Connection", "close",
-      "Content-type", "application/x-www-form-urlencoded",
-      "Accept", "text/plain",
-      0  //null terminator
-    };
-
-    const char *body = "cdip_path=data_access%2Fjustdar.cdip%3F142%2Bdd%2B";
-
-    HttpRequest request("codebones.com", 80);
-    request.initCallbacks(headersReady, receiveData, responseComplete, 0);
-    request.sendRequest("POST", "/cdipProxy.php", headers, (const unsigned char*)body, strlen(body));
-
-    while(request.responsesPending())
-    {
-      request.processRequest();
-    }
-  }
 
 };
 

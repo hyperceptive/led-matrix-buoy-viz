@@ -6,7 +6,7 @@ LDFLAGS = -L../rpi-led-matrix-panel -L../rpi-http-request
 LIBS = -lpthread -l$(RPI_LED_LIB) -l$(RPI_HTTP_LIB)
 TARGET = buoyViz
 
-SRCS = BuoyInfoDataViz.cpp Thread.cpp
+SRCS = BuoyInfoDataViz.cpp BuoyData.cpp Thread.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 
