@@ -4,8 +4,10 @@
 
 #include "LedMatrixBuoyViz.h"
 
+#include <algorithm>
 #include <ctime>
 #include <iostream>
+#include <math.h>
 
 
 //-----------------------------------------------------------------------------
@@ -47,9 +49,6 @@ void LedMatrixBuoyViz::run()
   _buoyData = new BuoyData();
   _buoyData->getBuoyData();
 
-  std::cout << "Out!" << std::endl;
-
-
   std::cout << "Last Updated at: " <<
                _buoyData->getDate() << " " <<
                _buoyData->getTime() << std::endl
@@ -83,7 +82,7 @@ void LedMatrixBuoyViz::run()
         break;
 
       case 5:
-        // TODO: Wind
+        // TODO: Wind Speed and Direction
         break;
 
       case 6:
@@ -161,10 +160,23 @@ void LedMatrixBuoyViz::groundSwell()
   _matrix->fadeDisplay();
   //sleep(WaitAfter);
 
-  //TODO: Calculate Angle and Size from Height, Period, and Direction.
+  // Calculate Angle and Size from Height, Period, and Direction.
+  float gsHeight = atof(_buoyData->getGroundSwellHeight().c_str()); //radius
+  float gsPeriod = atof(_buoyData->getGroundSwellPeriod().c_str()); //arc angle
   float gsDir = _buoyData->convertCompassPointToDegrees(_buoyData->getGroundSwellDirection());
 
-  _matrix->drawWedge(16, 11, 12, gsDir - 45, gsDir + 45, _green);
+  //Max Radius = 12
+  //Max Angle = 180 (90 perside)
+  float radius = std::min((float)12.0, std::max((float)6.0, gsHeight));
+  float angle  = std::min((float)90.0, gsPeriod*90/25);
+
+  float startAngle = gsDir - angle;
+  float endAngle = gsDir + angle;
+
+  std::cout << "Green Wedge - radius: " << radius << 
+               ", angle: " << angle << ", start: " << startAngle << " end: " << endAngle << std::endl;
+
+  _matrix->drawWedge(16, 11, (int)radius, startAngle, endAngle, _green);
   _matrix->fillCircle(16, 11, 1, _red); //buoy location
 
   sleep(WaitBefore);
@@ -229,11 +241,23 @@ void LedMatrixBuoyViz::windSwell()
   _matrix->fadeDisplay();
   //sleep(WaitAfter);
 
-  //TODO: Calculate Angle and Size from Height, Period, and Direction.
+  // Calculate Angle and Size from Height, Period, and Direction.
+  float wsHeight = atof(_buoyData->getWindSwellHeight().c_str()); //radius
+  float wsPeriod = atof(_buoyData->getWindSwellPeriod().c_str()); //arc angle
   float wsDir = _buoyData->convertCompassPointToDegrees(_buoyData->getWindSwellDirection());
 
+  //Max Radius = 12
+  //Max Angle = 180 (90 perside)
+  float wsRadius = std::min((float)12.0, std::max((float)5.0, wsHeight));
+  float wsAngle  = std::min((float)90.0, wsPeriod*90/25);
 
-  _matrix->drawWedge(16, 11, 9, wsDir - 45, wsDir + 45, _blue);
+  float wsStartAngle = wsDir - wsAngle;
+  float wsEndAngle = wsDir + wsAngle;
+
+  std::cout << "Blue Wedge - radius: " << wsRadius << 
+               ", angle: " << wsAngle << ", start: " << wsStartAngle << " end: " << wsEndAngle << std::endl;
+
+  _matrix->drawWedge(16, 11, (int)wsRadius, wsStartAngle, wsEndAngle, _blue);
   _matrix->fillCircle(16, 11, 1, _red); //buoy location
 
   sleep(WaitBefore);
@@ -245,14 +269,39 @@ void LedMatrixBuoyViz::windSwell()
 //-----------------------------------------------------------------------------
 void LedMatrixBuoyViz::groundAndWindSwell()
 {
-  //TODO: Calculate Angle and Size from Height, Period, and Direction.
+  // Calculate Angle and Size from Height, Period, and Direction.
+  float wsHeight = atof(_buoyData->getWindSwellHeight().c_str()); //radius
+  float wsPeriod = atof(_buoyData->getWindSwellPeriod().c_str()); //arc angle
   float wsDir = _buoyData->convertCompassPointToDegrees(_buoyData->getWindSwellDirection());
-  _matrix->drawWedge(16, 11, 9, wsDir - 45, wsDir + 45, _blue);
 
+  //Max Radius = 12
+  //Max Angle = 180 (90 perside)
+  float wsRadius = std::min((float)12.0, std::max((float)5.0, wsHeight));
+  float wsAngle  = std::min((float)90.0, wsPeriod*90/25);
+
+  float wsStartAngle = wsDir - wsAngle;
+  float wsEndAngle = wsDir + wsAngle;
+
+  _matrix->drawWedge(16, 11, (int)wsRadius, wsStartAngle, wsEndAngle, _blue);
+
+
+  // Calculate Angle and Size from Height, Period, and Direction.
+  float gsHeight = atof(_buoyData->getGroundSwellHeight().c_str()); //radius
+  float gsPeriod = atof(_buoyData->getGroundSwellPeriod().c_str()); //arc angle
   float gsDir = _buoyData->convertCompassPointToDegrees(_buoyData->getGroundSwellDirection());
-  _matrix->drawWedge(16, 11, 12, gsDir - 45, gsDir + 45, _green);
 
-  _matrix->fillCircle(16, 11, 1, _red); //buoy location
+  //Max Radius = 12
+  //Max Angle = 180 (90 perside)
+  float radius = std::min((float)12.0, std::max((float)6.0, gsHeight));
+  float angle  = std::min((float)90.0, gsPeriod*90/25);
+
+  float startAngle = gsDir - angle;
+  float endAngle = gsDir + angle;
+
+  _matrix->drawWedge(16, 11, (int)radius, startAngle, endAngle, _green);
+
+  // Buoy location
+  _matrix->fillCircle(16, 11, 1, _red); 
 
   sleep(WaitBefore);
   _matrix->fadeDisplay();
