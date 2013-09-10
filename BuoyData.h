@@ -2,6 +2,8 @@
 // Use of this source code is governed by The MIT License
 // that can be found in the LICENSE file.
 
+#include "Thread.h"
+
 #include <string>
 
 
@@ -17,7 +19,7 @@ struct BuoyInfo {
 };
 
 // Data Visualization of CDIP Buoy Data on a 32x32 RGB LED Matrix.
-class BuoyData
+class BuoyData : public Thread
 {
 public:
   BuoyData();
@@ -25,6 +27,8 @@ public:
   ~BuoyData();
 
   void getBuoyData();
+
+  void run();
 
   // Getters
   std::string getDate() const { return _latestBuoyInfo.date; }

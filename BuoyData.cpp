@@ -6,6 +6,7 @@
 #include "HttpRequest.h"
 
 #include <cstdio>
+#include <ctime>
 #include <math.h>
 #include <iostream>
 #include <sstream>
@@ -155,9 +156,24 @@ void responseComplete(const HttpResponse *response, void *additionalParams)
   buoyData->setWindSwellPeriod(buoyInfoData[2][9]);
   buoyData->setWindSwellDirection(buoyInfoData[2][11]);
 
+  std::cout << "Buoy Data Last Updated at: " <<
+               buoyData->getDate() << " " <<
+               buoyData->getTime() << std::endl
+            << "  Ground Swell: " <<
+               buoyData->getGroundSwellDirection() << " " <<
+               buoyData->getGroundSwellHeight() << "' @ " <<
+               buoyData->getGroundSwellPeriod() << "s" << std::endl
+            << "  Wind Swell: " <<
+               buoyData->getWindSwellDirection() << " " <<
+               buoyData->getWindSwellHeight() << "' @ " <<
+               buoyData->getWindSwellPeriod() << "s" << std::endl << std::endl;  
+}
 
-  //TODO: setup a timer to request this info again.
-  
+
+int curTime()
+{
+  time_t theTime = time(NULL);
+  return static_cast<int>(theTime);
 }
 
 
@@ -170,6 +186,27 @@ BuoyData::BuoyData()
 BuoyData::~BuoyData()
 {
   deleteArray2D(buoyInfoData);
+}
+
+
+//-----------------------------------------------------------------------------
+void BuoyData::run()
+{
+  // Number of seconds between auto-refresh
+  int timeBetweenAutoRefresh = 5*60; //5 minutes
+
+  int timeOfLastRefresh = curTime(); //assume we just refreshed the data
+
+  while(true)
+  {
+    //has enough time elapsed that we should call AutoFunction?
+    if (curTime() - timeOfLastRefresh >= timeBetweenAutoRefresh)
+    {
+        timeOfLastRefresh = curTime();
+        getBuoyData();
+    }
+    sleep(30);
+  }
 }
 
 

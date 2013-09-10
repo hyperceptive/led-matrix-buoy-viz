@@ -48,18 +48,7 @@ void LedMatrixBuoyViz::run()
   //Get the Buoy data from a web-service/API.
   _buoyData = new BuoyData();
   _buoyData->getBuoyData();
-
-  std::cout << "Last Updated at: " <<
-               _buoyData->getDate() << " " <<
-               _buoyData->getTime() << std::endl
-            << "Ground Swell: " <<
-               _buoyData->getGroundSwellDirection() << " " <<
-               _buoyData->getGroundSwellHeight() << "' @ " <<
-               _buoyData->getGroundSwellPeriod() << "s" << std::endl
-            << "Wind Swell: " <<
-               _buoyData->getWindSwellDirection() << " " <<
-               _buoyData->getWindSwellHeight() << "' @ " <<
-               _buoyData->getWindSwellPeriod() << "s" << std::endl << std::endl;
+  _buoyData->start();  //start thread to auto-update every X minutes
 
   while (!isDone())
   {
