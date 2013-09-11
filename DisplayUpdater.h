@@ -20,6 +20,7 @@ public:
   {
     while (!isDone())
     {
+      checkSuspend();
       _matrix->updateDisplay();
     }
   }

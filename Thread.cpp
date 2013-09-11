@@ -76,6 +76,45 @@ void Thread::run()
 
 
 //------------------------------------------------------------------------------
+// Tell the thread to suspend.
+void Thread::suspend()
+{
+  pthread_mutex_lock(&_suspendMutex);
+  _status = Suspended;
+  pthread_mutex_unlock(&_suspendMutex);
+}
+
+
+//------------------------------------------------------------------------------
+// Check if this thread should suspend.
+void Thread::checkSuspend()
+{
+  if(_status == Suspended)
+  {
+    pthread_mutex_lock(&_suspendMutex);
+
+    while (_status == Suspended)
+    {
+      pthread_cond_wait(&_resumeCondition, &_suspendMutex);
+    }
+
+    pthread_mutex_unlock(&_suspendMutex);
+  }
+}
+
+
+//------------------------------------------------------------------------------
+// Resume a suspended the thread.
+void Thread::resume()
+{
+  pthread_mutex_lock(&_suspendMutex);
+  _status = Running;
+  pthread_cond_signal(&_resumeCondition);
+  pthread_mutex_unlock(&_suspendMutex);
+}
+
+
+//------------------------------------------------------------------------------
 // Signal a thread to stop.
 void Thread::stop()
 {
@@ -90,4 +129,5 @@ void Thread::terminate(unsigned long i_return)
   _status = Finished;
   pthread_exit(&i_return);
 }
+
 

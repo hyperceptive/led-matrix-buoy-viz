@@ -32,6 +32,14 @@ int main(int argc, char *argv[])
   updater->start(10);
   display->start();
 
+  printf("Press <RETURN> to suspend updater thread.\n");
+  getchar();
+  updater->suspend();
+
+  printf("Press <RETURN> to resume updater thread.\n");
+  getchar();
+  updater->resume();
+
   printf("Press <RETURN> when done.\n");
   getchar();
 

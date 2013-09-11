@@ -156,6 +156,9 @@ void responseComplete(const HttpResponse *response, void *additionalParams)
   buoyData->setWindSwellPeriod(buoyInfoData[2][9]);
   buoyData->setWindSwellDirection(buoyInfoData[2][11]);
 
+  // No longer need buoyInfoData 2D Array
+  if (buoyInfoData != 0) deleteArray2D(buoyInfoData);
+
   time_t now = time(0);
 
   std::cout << ctime(&now) << "  Buoy Data Last Updated at: " <<
@@ -187,7 +190,6 @@ BuoyData::BuoyData()
  
 BuoyData::~BuoyData()
 {
-  deleteArray2D(buoyInfoData);
 }
 
 

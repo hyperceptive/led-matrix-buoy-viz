@@ -16,7 +16,13 @@ class Thread
 {
 public:
 
-  enum threadStatus { Created, Running, Finished, Invalid };
+  enum threadStatus {
+    Created,
+    Running,
+    Suspended,
+    Finished,
+    Invalid
+  };
 
   Thread();
   virtual ~Thread();
@@ -24,6 +30,10 @@ public:
   // Start the thread and execute the run() method.
   // Priority >0 will run thread as realtime.
   void start(int priority = 0);
+
+  void suspend();
+
+  void resume();
 
   // Signal a thread to stop.
   void stop();
@@ -34,6 +44,8 @@ public:
 
    
 protected:
+
+  void checkSuspend(); //call by derived class if suspend is needed.
 
   // Check if thread was signaled to stop.
   inline bool shouldStop() { return _stopThread; }
@@ -54,12 +66,15 @@ private:
   bool                  _stopThread;
   bool                  _threadDown;
 
+  pthread_mutex_t       _suspendMutex;
+  pthread_cond_t        _resumeCondition;
+
 };
 
 
 inline bool Thread::isDone() const
 {
-  if (_status == Created || _status == Running)
+  if (_status == Created || _status == Running || _status == Suspended)
   {
     return false;
   }
