@@ -114,7 +114,7 @@ void LedMatrixBuoyViz::groundSwell()
   sleep(WaitBefore-2);
   _matrix->fadeRect(0, 6, 31, 6);  //TODO: Font Height
   _matrix->fadeRect(0, 14, 31, 6);
-
+  sleep(1);
 
   _matrix->setTextCursor(5, 6);
   std::string work = _buoyData->getGroundSwellDirection();
@@ -145,9 +145,7 @@ void LedMatrixBuoyViz::groundSwell()
   _matrix->writeChar('s');
 
   sleep(WaitBefore);
-  //_matrix->clearDisplay();
-  _matrix->fadeDisplay();
-  //sleep(WaitAfter);
+  _matrix->wipeDown();
 
   // Calculate Angle and Size from Height, Period, and Direction.
   float gsHeight = atof(_buoyData->getGroundSwellHeight().c_str()); //radius
@@ -162,7 +160,9 @@ void LedMatrixBuoyViz::groundSwell()
   float startAngle = gsDir - angle;
   float endAngle = gsDir + angle;
 
-  std::cout << "Green Wedge - radius: " << radius << 
+  time_t now = time(0);
+
+  std::cout << ctime(&now) << "  Green Wedge - radius: " << radius << 
                ", angle: " << angle << ", start: " << startAngle << " end: " << endAngle << std::endl;
 
   _matrix->drawWedge(16, 11, (int)radius, startAngle, endAngle, _green);
@@ -196,7 +196,7 @@ void LedMatrixBuoyViz::windSwell()
   sleep(WaitBefore-2);
   _matrix->fadeRect(0, 6, 31, 6);  //TODO: Font Height
   _matrix->fadeRect(0, 14, 31, 6);
-
+  sleep(1);
 
   _matrix->setTextCursor(5, 6);
   std::string work = _buoyData->getWindSwellDirection();
@@ -227,8 +227,7 @@ void LedMatrixBuoyViz::windSwell()
   _matrix->writeChar('s');
 
   sleep(WaitBefore);
-  _matrix->fadeDisplay();
-  //sleep(WaitAfter);
+  _matrix->wipeDown();
 
   // Calculate Angle and Size from Height, Period, and Direction.
   float wsHeight = atof(_buoyData->getWindSwellHeight().c_str()); //radius
@@ -242,8 +241,10 @@ void LedMatrixBuoyViz::windSwell()
 
   float wsStartAngle = wsDir - wsAngle;
   float wsEndAngle = wsDir + wsAngle;
+  
+  time_t now = time(0);
 
-  std::cout << "Blue Wedge - radius: " << wsRadius << 
+  std::cout << ctime(&now) << "  Blue Wedge - radius: " << wsRadius << 
                ", angle: " << wsAngle << ", start: " << wsStartAngle << " end: " << wsEndAngle << std::endl;
 
   _matrix->drawWedge(16, 11, (int)wsRadius, wsStartAngle, wsEndAngle, _blue);

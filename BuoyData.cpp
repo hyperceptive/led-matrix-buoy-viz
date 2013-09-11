@@ -156,14 +156,16 @@ void responseComplete(const HttpResponse *response, void *additionalParams)
   buoyData->setWindSwellPeriod(buoyInfoData[2][9]);
   buoyData->setWindSwellDirection(buoyInfoData[2][11]);
 
-  std::cout << "Buoy Data Last Updated at: " <<
+  time_t now = time(0);
+
+  std::cout << ctime(&now) << "  Buoy Data Last Updated at: " <<
                buoyData->getDate() << " " <<
                buoyData->getTime() << std::endl
-            << "  Ground Swell: " <<
+            << "    Ground Swell: " <<
                buoyData->getGroundSwellDirection() << " " <<
                buoyData->getGroundSwellHeight() << "' @ " <<
                buoyData->getGroundSwellPeriod() << "s" << std::endl
-            << "  Wind Swell: " <<
+            << "    Wind Swell:   " <<
                buoyData->getWindSwellDirection() << " " <<
                buoyData->getWindSwellHeight() << "' @ " <<
                buoyData->getWindSwellPeriod() << "s" << std::endl << std::endl;  
