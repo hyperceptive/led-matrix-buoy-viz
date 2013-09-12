@@ -11,8 +11,11 @@
 
 
 //-----------------------------------------------------------------------------
-LedMatrixBuoyViz::LedMatrixBuoyViz(RgbMatrix *m) : RgbMatrixContainer(m)
+LedMatrixBuoyViz::LedMatrixBuoyViz(RgbMatrix *m, DisplayUpdater *d)
+  : RgbMatrixContainer(m)
 {
+  _updater = d;
+
   _red.red = 255;
 
   _green.green = 255;
@@ -50,8 +53,13 @@ void LedMatrixBuoyViz::run()
   _buoyData->getBuoyData();
   _buoyData->start();  //start thread to auto-update every X minutes
 
+  int fish = 1;
+
   while (!isDone())
   {
+    std::cout << "Times through loop: " << fish << std::endl;
+    fish++;
+
     switch (curStat)
     {
       case 1:
@@ -116,6 +124,8 @@ void LedMatrixBuoyViz::groundSwell()
   _matrix->fadeRect(0, 14, 31, 6);
   sleep(1);
 
+  _updater->suspend(); // Stop updating display in order to fade-in
+
   _matrix->setTextCursor(5, 6);
   std::string work = _buoyData->getGroundSwellDirection();
 
@@ -144,6 +154,11 @@ void LedMatrixBuoyViz::groundSwell()
 
   _matrix->writeChar('s');
 
+  // Fade In the content 
+  _matrix->setupFadeIn();
+  _updater->resume();
+  _matrix->fadeIn();
+
   sleep(WaitBefore);
   _matrix->wipeDown();
 
@@ -160,10 +175,9 @@ void LedMatrixBuoyViz::groundSwell()
   float startAngle = gsDir - angle;
   float endAngle = gsDir + angle;
 
-  time_t now = time(0);
-
-  std::cout << ctime(&now) << "  Green Wedge - radius: " << radius << 
-               ", angle: " << angle << ", start: " << startAngle << " end: " << endAngle << std::endl;
+  //time_t now = time(0);
+  //std::cout << ctime(&now) << "  Green Wedge - radius: " << radius << 
+  //             ", angle: " << angle << ", start: " << startAngle << " end: " << endAngle << std::endl;
 
   _matrix->drawWedge(16, 11, (int)radius, startAngle, endAngle, _green);
   _matrix->fillCircle(16, 11, 1, _red); //buoy location
@@ -198,6 +212,8 @@ void LedMatrixBuoyViz::windSwell()
   _matrix->fadeRect(0, 14, 31, 6);
   sleep(1);
 
+  _updater->suspend(); // Stop updating display in order to fade-in
+
   _matrix->setTextCursor(5, 6);
   std::string work = _buoyData->getWindSwellDirection();
 
@@ -224,6 +240,11 @@ void LedMatrixBuoyViz::windSwell()
     _matrix->writeChar(*itr);
   }
 
+  // Fade In the content 
+  _matrix->setupFadeIn();
+  _updater->resume();
+  _matrix->fadeIn();
+
   _matrix->writeChar('s');
 
   sleep(WaitBefore);
@@ -242,10 +263,9 @@ void LedMatrixBuoyViz::windSwell()
   float wsStartAngle = wsDir - wsAngle;
   float wsEndAngle = wsDir + wsAngle;
   
-  time_t now = time(0);
-
-  std::cout << ctime(&now) << "  Blue Wedge - radius: " << wsRadius << 
-               ", angle: " << wsAngle << ", start: " << wsStartAngle << " end: " << wsEndAngle << std::endl;
+  //time_t now = time(0);
+  //std::cout << ctime(&now) << "  Blue Wedge - radius: " << wsRadius << 
+  //             ", angle: " << wsAngle << ", start: " << wsStartAngle << " end: " << wsEndAngle << std::endl;
 
   _matrix->drawWedge(16, 11, (int)wsRadius, wsStartAngle, wsEndAngle, _blue);
   _matrix->fillCircle(16, 11, 1, _red); //buoy location

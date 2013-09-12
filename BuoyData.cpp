@@ -157,7 +157,10 @@ void responseComplete(const HttpResponse *response, void *additionalParams)
   buoyData->setWindSwellDirection(buoyInfoData[2][11]);
 
   // No longer need buoyInfoData 2D Array
-  if (buoyInfoData != 0) deleteArray2D(buoyInfoData);
+  if (buoyInfoData != 0)
+  {
+    deleteArray2D(buoyInfoData);
+  }
 
   time_t now = time(0);
 

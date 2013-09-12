@@ -24,21 +24,13 @@ int main(int argc, char *argv[])
   RgbMatrixContainer *display = NULL;
   RgbMatrixContainer *updater = NULL;
 
-  display = new LedMatrixBuoyViz(m);
   updater = new DisplayUpdater(m);
+  display = new LedMatrixBuoyViz(m, (DisplayUpdater*)updater);
 
   printf("\nRunning the Buoy Data Visualization.\n\n");
 
   updater->start(10);
   display->start();
-
-  printf("Press <RETURN> to suspend updater thread.\n");
-  getchar();
-  updater->suspend();
-
-  printf("Press <RETURN> to resume updater thread.\n");
-  getchar();
-  updater->resume();
 
   printf("Press <RETURN> when done.\n");
   getchar();

@@ -3,6 +3,7 @@
 // that can be found in the LICENSE file.
 
 #include "BuoyData.h"
+#include "DisplayUpdater.h"
 #include "RgbMatrix.h"
 #include "RgbMatrixContainer.h"
 
@@ -18,7 +19,7 @@ public:
   static const int WaitAfter = 1;
 
 
-  LedMatrixBuoyViz(RgbMatrix *m);
+  LedMatrixBuoyViz(RgbMatrix *m, DisplayUpdater *d);
 
   void run();
 
@@ -33,6 +34,7 @@ private:
 
   BuoyData *_buoyData;
 
+  DisplayUpdater *_updater;  //access to updater to implement fadeIn effect
 
   void groundSwell();
   void windSwell();
