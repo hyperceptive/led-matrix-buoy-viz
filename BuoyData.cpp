@@ -46,6 +46,7 @@ void headersReady(const HttpResponse *response, void *additionalParams)
 {
   printf("HTTP Status: %d - %s\n", response->getStatus(), response->getReason());
   payloadSize = 0;
+  payload.clear();
 }
 
 

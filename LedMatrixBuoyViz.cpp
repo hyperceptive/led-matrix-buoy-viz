@@ -53,13 +53,8 @@ void LedMatrixBuoyViz::run()
   _buoyData->getBuoyData();
   _buoyData->start();  //start thread to auto-update every X minutes
 
-  int fish = 1;
-
   while (!isDone())
   {
-    std::cout << "Times through loop: " << fish << std::endl;
-    fish++;
-
     switch (curStat)
     {
       case 1:
