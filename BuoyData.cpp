@@ -150,11 +150,11 @@ void responseComplete(const HttpResponse *response, void *additionalParams)
 
   buoyData->setDate(buoyInfoData[2][0] + buoyInfoData[2][1] + buoyInfoData[2][2]); //YYYYMMDD
   buoyData->setTime(buoyInfoData[2][3] + buoyInfoData[2][4]); //HHMM
-  buoyData->setGroundSwellHeight(buoyData->convertMetersToFeet(buoyInfoData[2][6]));
-  buoyData->setGroundSwellPeriod(buoyInfoData[2][7]);
+  buoyData->setGroundSwellHeight(buoyData->round(buoyData->convertMetersToFeet(buoyInfoData[2][6])));
+  buoyData->setGroundSwellPeriod(buoyData->round(buoyInfoData[2][7]));
   buoyData->setGroundSwellDirection(buoyInfoData[2][10]);
-  buoyData->setWindSwellHeight(buoyData->convertMetersToFeet(buoyInfoData[2][8]));
-  buoyData->setWindSwellPeriod(buoyInfoData[2][9]);
+  buoyData->setWindSwellHeight(buoyData->round(buoyData->convertMetersToFeet(buoyInfoData[2][8])));
+  buoyData->setWindSwellPeriod(buoyData->round(buoyInfoData[2][9]));
   buoyData->setWindSwellDirection(buoyInfoData[2][11]);
 
   // No longer need buoyInfoData 2D Array
@@ -352,5 +352,17 @@ float BuoyData::convertCompassPointToDegrees(std::string cp)
     return 247.5;
 
   return 0;
+}
+
+
+//-----------------------------------------------------------------------------
+std::string BuoyData::round(std::string realNumStr)
+{
+  float realNum = atof(realNumStr.c_str());
+  realNum = floorf(realNum + 0.5);
+
+  std::ostringstream ss;
+  ss << realNum;
+  return ss.str();
 }
 

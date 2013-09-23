@@ -54,6 +54,9 @@ public:
   std::string convertMetersToFeet(std::string meters);
   float convertCompassPointToDegrees(std::string cp);
 
+  std::string round(std::string realNumStr);
+
+
 private:
 
   BuoyInfo _latestBuoyInfo;

@@ -16,21 +16,21 @@ LedMatrixBuoyViz::LedMatrixBuoyViz(RgbMatrix *m, DisplayUpdater *d)
 {
   _updater = d;
 
-  _red.red = 255;
+  _red.red = 180;
 
-  _green.green = 255;
+  _green.green = 180;
 
-  _blue.blue = 255;
+  _blue.blue = 180;
 
-  _purple.red = 255;
-  _purple.blue = 255;
+  _purple.red = 180;
+  _purple.blue = 180;
 
-  _yellow.red = 255;
-  _yellow.green = 255;
+  _yellow.red = 180;
+  _yellow.green = 180;
 
-  _white.red = 255;
-  _white.green = 255;
-  _white.blue = 255;
+  _white.red = 180;
+  _white.green = 180;
+  _white.blue = 180;
 }
 
 
