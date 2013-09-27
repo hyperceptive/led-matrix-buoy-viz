@@ -2,27 +2,6 @@
 // Copyright (c) 2013 Hyperceptive, LLC
 // Use of this source code is governed by The MIT License.
 // that can be found in the LICENSE file.
-
-
-; Configuration file for the LED Matrix Surf Visualization.
-
-[GLOBAL]
-explain_mode = true    ; display an explanation of each visualization
-explain_count = 5      ; show the explanations every X times through the loop
-
-wait_before = 4        ; seconds to wait before fading a visualization
-wait_after = 1         ; seconds to wait in between each visualization
-
-
-[VISUALIZATIONS]
-ground_swell = true
-wind_swell = true
-ground_and_wind_swell = true
-tide = false
-wind_buoy = false
-wind_ob = false
-sunrise_sunset = false
-temp_Air_Water = false
 -->
 <?php
 
@@ -34,12 +13,12 @@ function put_ini_file($file, $array, $i = 0)
   {
     if (is_array($v))
     {
-      $str.=str_repeat(" ",$i*2)."[$k]".PHP_EOL; 
-      $str.=put_ini_file("",$v, $i+1);
+      $str .= str_repeat(" ",$i*2)."[$k]".PHP_EOL; 
+      $str .= put_ini_file("", $v);  //mateo: , $i+1);
     }
     else
     {
-      $str.=str_repeat(" ",$i*2)."$k = $v".PHP_EOL; 
+      $str .= str_repeat(" ",$i*2)."$k = $v".PHP_EOL; 
     }
   }
 
@@ -49,55 +28,19 @@ function put_ini_file($file, $array, $i = 0)
     return $str;
 }
 
+$ConfigFile = "/home/pi/led-matrix-buoy-viz/config.ini";
+
+$iniArray = parse_ini_file($ConfigFile, TRUE, INI_SCANNER_RAW);
+
+//var_dump($iniArray);
+
+$globalArray = $iniArray['GLOBALS'];
+$vizArray = $iniArray['VISUALIZATIONS'];
 
 
-function write_php_ini($file, $array)
-{
-    $res = array();
-    foreach($array as $key => $val)
-    {
-        if(is_array($val))
-        {
-            $res[] = "[$key]";
-            foreach($val as $skey => $sval) $res[] = "$skey = ".(is_numeric($sval) ? $sval : '"'.$sval.'"');
-        }
-        else $res[] = "$key = ".(is_numeric($val) ? $val : '"'.$val.'"');
-    }
-    safefilerewrite($file, implode("\r\n", $res));
-}
+// TODO: Create a funciton for writing it back out.
+//put_ini_file($ConfigFile, $iniArray);
 
-function safefilerewrite($fileName, $dataToSave)
-{    if ($fp = fopen($fileName, 'w'))
-    {
-        $startTime = microtime();
-        do
-        {            $canWrite = flock($fp, LOCK_EX);
-           // If lock not obtained sleep for 0 - 100 milliseconds, to avoid collision and CPU load
-           if(!$canWrite) usleep(round(rand(0, 100)*1000));
-        } while ((!$canWrite)and((microtime()-$startTime) < 1000));
-
-        //file was locked so now we can store information
-        if ($canWrite)
-        {            fwrite($fp, $dataToSave);
-            flock($fp, LOCK_UN);
-        }
-        fclose($fp);
-    }
-
-}
-
-
-// Parse ini file (without sections)
-$iniArray = parse_ini_file("LedMatrixBuoyViz.ini", TRUE, INI_SCANNER_RAW);
-
-$globalArray = $iniArray[GLOBALS];
-$vizArray = $iniArray[VISUALIZATIONS];
-
-
-// Try writing it back out.
-put_ini_file("/home/pi/led-matrix-buoy-viz/www/fish.ini", $iniArray);
-
-write_php_ini("/home/pi/led-matrix-buoy-viz/www/taco.ini", $iniArray);
 
 
 ?>
@@ -126,35 +69,60 @@ write_php_ini("/home/pi/led-matrix-buoy-viz/www/taco.ini", $iniArray);
           <h1>Surf Visualization</h1>
 
           <h2>Global Options</h2>
-          <table>
-            <tr>
-              <th>Option</th>
-              <th>Value</th>
-            </tr>
-            <? while ($configName = current($globalArray)) { ?>
-            <tr>
-              <td><?= key($globalArray) ?></td>
-              <td><?= $configName ?></td>
-            </tr><?
-              next($globalArray);
-             } ?>
-          </table>
+          <form>
+            <table>
+              <tr>
+                <th>Option</th>
+                <th>Value</th>
+              </tr>
+              <? while ($configValue = current($globalArray)) { ?>
+              <tr>
+                <td><?= key($globalArray) ?></td>
+                <td>
+                <? if ($configValue == "true") { ?>
+                  <input type="radio" name=<?=key($globalArray)?> value="true" checked="checked">Show</input>
+                  <input type="radio" name=<?=key($globalArray)?> value="false">Hide</input>
+                <? } else if ($configValue == "false") { ?>
+                  <input type="radio" name=<?=key($globalArray)?> value="true">Show</input>
+                  <input type="radio" name=<?=key($globalArray)?> value="false" checked="checked">Hide</input>                
+                <? } else { ?>
+                  <input type="text" name=<?=key($globalArray)?> value=<?=$configValue?> />
+                <? } ?>
+                </td>
 
-          <h2>Visualization Options</h2>
-          <table>
-            <tr>
-              <th>Option</th>
-              <th>Value</th>
-            </tr>
-            <? while ($configName = current($vizArray)) { ?>
-            <tr>
-              <td><?= key($vizArray) ?></td>
-              <td><?= $configName ?></td>
-            </tr><?
-              next($vizArray);
-             } ?>
-          </table>
+              </tr><?
+                next($globalArray);
+               } ?>
+              <tr><td colspan="2"><div align="center"><input type="submit" /><div></td></tr>
+            </table>            
+  
+            <h2>Visualization Options</h2>
+            <table>
+              <tr>
+                <th>Option</th>
+                <th>Value</th>
+              </tr>
+              <? while ($configValue = current($vizArray)) { ?>
+              <tr>
+                <td><?= key($vizArray) ?></td>
+                <td>
+                <? if ($configValue == "true") { ?>
+                  <input type="radio" name=<?=key($vizArray)?> value="true" checked="checked">Show</input>
+                  <input type="radio" name=<?=key($vizArray)?> value="false">Hide</input>
+                <? } else if ($configValue == "false") { ?>
+                  <input type="radio" name=<?=key($vizArray)?> value="true">Show</input>
+                  <input type="radio" name=<?=key($vizArray)?> value="false" checked="checked">Hide</input>                
+                <? } else { ?>
+                  <input type="text" name=<?=key($vizArray)?> value=<?=$configValue?> />
+                <? } ?>
+                </td>
+              </tr><?
+                next($vizArray);
+               } ?>
+              <tr><td colspan="2"><div align="center"><input type="submit" /><div></td></tr>
+            </table>
 
+          </form>
         </div>
       </div>
     </div>
