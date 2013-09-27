@@ -1,0 +1,199 @@
+/*
+ Copyright (c) 2013 Hyperceptive, LLC
+ Use of this source code is governed by The MIT License.
+ that can be found in the LICENSE file.
+*/
+
+
+/* ============================== */
+/* ! Layout for desktop version   */
+/* ============================== */
+
+body {
+  background-color: #E4E4E4;
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+  line-height: 18px;
+  font-family: "Helvetica Neue",Arial,sans-serif;
+}
+
+.header{
+  background-color: #FFFFFF;
+  width: 100%;
+  height: 130px;
+  padding-top: 10px;
+  margin-bottom: 20px;
+}
+
+.header .logo {
+  background-image: url('../img/hyperceptive.png');
+  background-repeat: no-repeat;
+  height: 100%;
+  width: 100%;
+}
+
+#logo {
+  display: block;
+  text-indent: -9999px;
+}
+
+.header .head {
+  width: 100%;
+}
+
+.content {
+  width: 100%;
+}
+
+.content .body {
+  width: 100%;
+}
+
+.footer .foot {
+  width: 100%;
+  background-color: #D6D6D6;
+  padding-top: 2px;
+  margin-top: 20px;
+}
+
+.foot {
+  text-align: center;
+}
+
+
+
+
+table a:link {
+	color: #666;
+	font-weight: bold;
+	text-decoration:none;
+}
+table a:visited {
+	color: #999999;
+	font-weight:bold;
+	text-decoration:none;
+}
+table a:active,
+table a:hover {
+	color: #bd5a35;
+	text-decoration:underline;
+}
+table {
+	font-family:Arial, Helvetica, sans-serif;
+	color:#666;
+	font-size:12px;
+	text-shadow: 1px 1px 0px #fff;
+	background:#eaebec;
+	margin:20px;
+	border:#ccc 1px solid;
+
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+
+	-moz-box-shadow: 0 1px 2px #d1d1d1;
+	-webkit-box-shadow: 0 1px 2px #d1d1d1;
+	box-shadow: 0 1px 2px #d1d1d1;
+}
+table th {
+	padding:21px 25px 22px 25px;
+	border-top:1px solid #fafafa;
+	border-bottom:1px solid #e0e0e0;
+
+	background: #ededed;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
+	background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+}
+table th:first-child {
+	text-align: left;
+	padding-left:20px;
+}
+table tr:first-child th:first-child {
+	-moz-border-radius-topleft:3px;
+	-webkit-border-top-left-radius:3px;
+	border-top-left-radius:3px;
+}
+table tr:first-child th:last-child {
+	-moz-border-radius-topright:3px;
+	-webkit-border-top-right-radius:3px;
+	border-top-right-radius:3px;
+}
+table tr {
+	text-align: center;
+	padding-left:20px;
+}
+table td:first-child {
+	text-align: left;
+	padding-left:20px;
+	border-left: 0;
+}
+table td {
+	padding:18px;
+	border-top: 1px solid #ffffff;
+	border-bottom:1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+
+	background: #fafafa;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa));
+	background: -moz-linear-gradient(top,  #fbfbfb,  #fafafa);
+}
+table tr.even td {
+	background: #f6f6f6;
+	background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f6f6f6));
+	background: -moz-linear-gradient(top,  #f8f8f8,  #f6f6f6);
+}
+table tr:last-child td {
+	border-bottom:0;
+}
+table tr:last-child td:first-child {
+	-moz-border-radius-bottomleft:3px;
+	-webkit-border-bottom-left-radius:3px;
+	border-bottom-left-radius:3px;
+}
+table tr:last-child td:last-child {
+	-moz-border-radius-bottomright:3px;
+	-webkit-border-bottom-right-radius:3px;
+	border-bottom-right-radius:3px;
+}
+table tr:hover td {
+	background: #f2f2f2;
+	background: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#f0f0f0));
+	background: -moz-linear-gradient(top,  #f2f2f2,  #f0f0f0);
+}
+
+
+
+/* ============================= */
+/* ! Layout for mobile version   */
+/* ============================= */
+
+@media handheld, only screen and (max-width: 767px) {
+ 
+  body {
+    /* background-color: #FF0000; */
+  }
+
+  .row {
+    max-width: 755px;
+    min-width: 620px;
+  }
+
+}
+
+
+@media only screen and (max-width: 479px) {
+
+  body {
+    /* background-color:#00FF00; */
+  }
+
+  .row, body {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+
+}
