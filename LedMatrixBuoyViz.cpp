@@ -53,7 +53,7 @@ void LedMatrixBuoyViz::run()
   const int NumStats = 7;
   int curStat = 1;
 
-  int explainCount = 0;
+  _explainCount = 0;
 
   //Get the Buoy data from a web-service/API.
   _buoyData = new BuoyData();
@@ -65,10 +65,10 @@ void LedMatrixBuoyViz::run()
   while (!isDone())
   {
     //In Explain mode, re-introduce the data viz from time to time.
-    if (_explainMode && explainCount > 6)
+    if (_explainMode && _explainCount > 6)
     {
       introduceDataViz();
-      explainCount = 0;
+      _explainCount = 0;
     }
 
     switch (curStat)
@@ -108,7 +108,7 @@ void LedMatrixBuoyViz::run()
     if (curStat > NumStats)
     {
       curStat = 1;
-      explainCount++;
+      _explainCount++;
     }
   }
 }
@@ -117,14 +117,132 @@ void LedMatrixBuoyViz::run()
 //-----------------------------------------------------------------------------
 void LedMatrixBuoyViz::introduceDataViz()
 {
-  //TODO: guide the viewer around the viz...
-  displayTitle(_white, _white, "Surf", "State");
+  _matrix->setFontSize(2);
+  _matrix->setWordWrap(false);
+  _matrix->setFontColor(_white);
 
-  displayTitle(_red, _red, "SF Bar", "Buoy");
+  _matrix->setTextCursor(1, 0);
+  std::string textLine = "SF";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(13, 0);
+  textLine = "Bay";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(6, 8);
+  textLine = "Area";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(3, 16);
+  textLine = "Surf";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(6, 24);
+  textLine = "State";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  sleep(WaitBefore-2);
+  _matrix->fadeRect(0, 0, 31, 7);  //TODO: Use SwellFontWidth...
+  _matrix->fadeRect(0, 8, 31, 7);
+  _matrix->fadeRect(0, 16, 31, 7);
+  _matrix->fadeRect(0, 24, 31, 7);
+
+  //Buoy Location
+  _matrix->setFontColor(_white);
+
+  _matrix->setTextCursor(1, 0);
+  textLine = "using";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(6, 8);
+  textLine = "SF";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(18, 8);
+  textLine = "Bar";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(3, 16);
+  textLine = "Buoy";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(6, 24);
+  textLine = "Data";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  sleep(WaitBefore-2);
+  _matrix->fadeRect(0, 0, 32, 7);  //TODO: Use SwellFontWidth...
+  _matrix->fadeRect(0, 8, 32, 7);
+  _matrix->fadeRect(0, 16, 32, 7);
+  _matrix->fadeRect(0, 24, 32, 7);
+  sleep(1);
+
+  //Buoy Location
+  _matrix->setFontColor(_red);
+
+  _matrix->setTextCursor(1, 0);
+  textLine = "The";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
+
+  _matrix->setTextCursor(6, 7);
+  textLine = "Buoy";
+
+  for (std::string::iterator itr = textLine.begin(); itr != textLine.end(); itr++)
+  {
+    _matrix->writeChar(*itr);
+  }
 
   _matrix->fillCircle(BuoyX, BuoyY, 1, _red); //Add Buoy Location
 
-  sleep(WaitBefore);
+  sleep(2);
+  _matrix->fadeRect(0, 0, 32, 6);  //TODO: Use SwellFontWidth...
+  _matrix->fadeRect(0, 7, 32, 7);
+
+  sleep(WaitBefore-2);
   _matrix->fadeDisplay();
   sleep(WaitAfter);
 }
@@ -133,12 +251,16 @@ void LedMatrixBuoyViz::introduceDataViz()
 //-----------------------------------------------------------------------------
 void LedMatrixBuoyViz::groundSwell()
 {
-  //TODO: only display Title in "Explain" mode.
-  displayTitle(_green, _green, "Ground", "Swell");
+  //Only display Title in "Explain" mode.
+  if (_explainMode && _explainCount == 0)
+  {
+    displayTitle(_green, _green, "Ground", "Swell");
+  }
 
   //Buoy Info
   _updater->suspend(); // Stop updating display in order to fade-in
 
+  _matrix->setFontColor(_green);
   _matrix->setTextCursor(0, 6);
   std::string work = _buoyData->getGroundSwellDirection();
 
@@ -189,12 +311,16 @@ void LedMatrixBuoyViz::groundSwell()
 //-----------------------------------------------------------------------------
 void LedMatrixBuoyViz::windSwell()
 {
-  //TODO: only display Title in "Explain" mode.
-  displayTitle(_blue, _blue, "Wind", "Swell");
+  //Only display Title in "Explain" mode.
+  if (_explainMode && _explainCount == 0)
+  {
+    displayTitle(_blue, _blue, "Wind", "Swell");
+  }
 
   //Buoy Info
   _updater->suspend(); // Stop updating display in order to fade-in
 
+  _matrix->setFontColor(_blue);
   _matrix->setTextCursor(0, 6);
   std::string work = _buoyData->getWindSwellDirection();
 
@@ -245,9 +371,11 @@ void LedMatrixBuoyViz::windSwell()
 //-----------------------------------------------------------------------------
 void LedMatrixBuoyViz::groundAndWindSwell()
 {
-  //TODO: only display Title in "Explain" mode.
-  //displayTitle(_green, _blue, "Combo", "Swell");
-  displayTitle(_turquoise, _turquoise, "Combo", "Swell");
+  //Only display Title in "Explain" mode.
+  if (_explainMode && _explainCount == 0)
+  {
+    displayTitle(_turquoise, _turquoise, "Combo", "Swell");
+  }
 
   displayWindSwellViz();
   displayGroundSwellViz();

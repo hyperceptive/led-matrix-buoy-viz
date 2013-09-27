@@ -43,6 +43,7 @@ private:
   Color _white;
 
   bool _explainMode;
+  int  _explainCount;
 
   BuoyData *_buoyData;
 
